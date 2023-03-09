@@ -50,20 +50,20 @@ def getCommitId(user):
 
 
 def findLogsAndDiffs(user, outputPath):
-    global javaFiles
-    javaFiles = []
     prevWarnCnt = 0
     curWarnCnt = 0
     try:
         outputFile = open(outputPath, 'w')
         os.chdir(user)
-        find_java_files(".")
-        print(f'all_java_files: {javaFiles}')
         commitIds = getCommitId(user)
         print(commitIds)
         numOfCommitIds = len(commitIds)
 
         for i in range(numOfCommitIds):
+            global javaFiles
+            javaFiles = []
+            find_java_files(".")
+            print(f'all_java_files: {javaFiles}')
             cmd = "git checkout " + commitIds[i]
             print("executing command " + cmd)
             logMessage = subprocess.check_output(cmd, shell=True).decode("utf-8")
