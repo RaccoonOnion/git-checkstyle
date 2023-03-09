@@ -2,7 +2,7 @@ import subprocess
 import os
 import time
 
-ddl = "\"2023-03-30\""
+ddl = "\"2023-09-10\""
 
 
 def find_java_files(str):
@@ -32,8 +32,7 @@ def cloneProject(url, user):
 
 def getCommitId(user):
     "return a list of revision numbers in a git repo at local path dir"
-    # os.chdir(dir)
-    os.chdir(user)
+    # os.chdir(user)
     print(os.getcwd())
     cmd = "git log --format=%H --before=" + ddl
     print("executing command " + cmd)
@@ -50,27 +49,31 @@ def getCommitId(user):
 
 
 def findLogsAndDiffs(user, outputPath):
+    global javaFiles
+    javaFiles = []
     prevWarnCnt = 0
     curWarnCnt = 0
     try:
         outputFile = open(outputPath, 'w')
+        print(os.getcwd())
         os.chdir(user)
+        print(f'all_java_files: {javaFiles}')
+        print(os.getcwd())
         commitIds = getCommitId(user)
         print(commitIds)
         numOfCommitIds = len(commitIds)
 
         for i in range(numOfCommitIds):
-            global javaFiles
             javaFiles = []
             find_java_files(".")
+            os.chdir(user)
             print(f'all_java_files: {javaFiles}')
             cmd = "git checkout " + commitIds[i]
             print("executing command " + cmd)
             logMessage = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
             for file in javaFiles:
-                # "java -jar /Users/sqlab/Downloads/checkstyle-10.3-all.jar -c /google_checks.xml "
-                cmd = "java -jar D:\Java\checkstyle-10.7.0-all.jar -c /google_checks.xml "+ file
+                cmd = "java -jar /Users/sqlab/Downloads/checkstyle-10.3-all.jar -c /google_checks.xml "+ file
                 logMessage = subprocess.check_output(cmd, shell=True).decode("utf-8")
                 print(file)
                 if logMessage is not None:
@@ -101,3 +104,4 @@ def findLogsAndDiffs(user, outputPath):
         print(os.getcwd())
     except Exception as ee:
         print(ee)
+        exit(-1)
